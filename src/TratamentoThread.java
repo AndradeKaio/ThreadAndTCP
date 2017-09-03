@@ -42,7 +42,15 @@ public class TratamentoThread implements Runnable {
             }
         }catch(Exception e){
 
-            System.out.println("Exceção na classe TratamentoThread: " + e);
+            System.out.println("Excecao na classe TratamentoThread: " + e);
         }
+        finally {
+			try {
+				socket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
     }
 }

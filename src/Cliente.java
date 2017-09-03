@@ -13,17 +13,17 @@ public class Cliente {
 	public void connect(String address, short port) {
 		try {
 			client = new Socket(address, port);
-			System.out.println("Cliente conectado no servidor na porta "+ port);
+			System.out.println("Conectando ao servidor na porta "+ port);
 			
 			
 			
 	        Scanner entrada = new Scanner(client.getInputStream());
 
-	        while(entrada.hasNextLine()){
+	        //while(entrada.hasNextLine()){
 
 	            System.out.println(entrada.nextLine());
 
-	        }
+	        //}
 
 	        client.close();
 	        entrada.close();
