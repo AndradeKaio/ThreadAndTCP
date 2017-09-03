@@ -1,5 +1,7 @@
 import java.io.IOException;
-import java.net.*;
+import java.io.PrintStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class Servidor {
 
@@ -8,6 +10,7 @@ public class Servidor {
 	private Socket cliente;
 	private final short PORT = 12346;
 	private short clientCount = 0;
+	private PrintStream chat;
 	
 	
 	
@@ -38,6 +41,9 @@ public class Servidor {
                 TratamentoThread tratamentoThread = new TratamentoThread(cliente);
 
                 System.out.println("Nova conexao com o cliente "+ clientCount+". Endereco:" + cliente.getInetAddress().getHostAddress());
+                
+                chat = new PrintStream(cliente.getOutputStream());
+                chat.println("Bem vindo! Você é o cliente número: "+clientCount);
 
                 Thread thread = new Thread(tratamentoThread);
 

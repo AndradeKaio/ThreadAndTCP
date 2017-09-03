@@ -7,14 +7,27 @@ import java.util.Scanner;
 public class Cliente {
 
 	
-	private Socket cliente;
+	private Socket client;
 	
 	
 	public void connect(String address, short port) {
 		try {
-			cliente = new Socket(address, port);
+			client = new Socket(address, port);
 			System.out.println("Cliente conectado no servidor na porta "+ port);
-			cliente.close();
+			
+			
+			
+	        Scanner entrada = new Scanner(client.getInputStream());
+
+	        while(entrada.hasNextLine()){
+
+	            System.out.println(entrada.nextLine());
+
+	        }
+
+	        client.close();
+	        entrada.close();
+	        
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -31,20 +44,11 @@ public class Cliente {
         
     	
     	
-    	Cliente client = new Cliente();
-    	client.connect("127.0.0.1", (short) 12346);
-    	/*
-        Scanner teclado = new Scanner(System.in);
-        PrintStream saida = new PrintStream(cliente.getOutputStream());
+    	Cliente cliente = new Cliente();
+    	cliente.connect("127.0.0.1", (short) 12346);
+    	
+    	
 
-        while(teclado.hasNextLine()){
-
-            saida.println(teclado.nextLine());
-
-        }
-
-        saida.close();
-        teclado.close();*/
         
     }
 }
