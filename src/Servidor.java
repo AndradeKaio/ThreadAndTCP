@@ -1,76 +1,83 @@
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Servidor {
 
-	
-	private ServerSocket servidor;
-	private Socket cliente;
-	private final short PORT = 12346;
-	private short clientCount = 0;
-	private PrintStream chat;
-	
-	
-	
-	
-	public Servidor() {
-		try {
-			servidor = new ServerSocket(PORT);
-			
-			System.out.println("Servidor inicializado. Porta "+PORT+" aberta!");
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	
-	
-	public void start() {
+
+    private ServerSocket servidor;
+    private Socket cliente;
+    private final short PORT = 8080;
+    private short clientCount = 0;
+    private List<PrintStream> clientes;
+
+    public Servidor(){
+
         try {
-            
+            servidor = new ServerSocket(PORT);
+            System.out.println("Porta "+PORT+" aberta!");
+            this.clientes = new ArrayList<PrintStream>();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public void repasseDeMensagem(String mensagem) {
+
+        for (PrintStream cliente : this.clientes) {
+            cliente.println(mensagem);
+        }
+    }
+
+    public void start(){
+
+        //joga a excecao caso a porta nao esteja liberada e o socket nao possa ser criado
+
+        try{
 
             while(true) {
 
-            	//Thread fica esperando nova conexao de cliente.
+                //cria uma thread com um objeto de tratamento para cada cliente conectado
+                //o codigo do servidor interagindo com o cliente e colocado na classe de tratamento
+
                 Socket cliente = servidor.accept();
-                //Novo cliente se conecta
                 clientCount++;
-                //Handle criado
-                TratamentoThread tratamentoThread = new TratamentoThread(cliente);
-                
-                //log 
-                System.out.println("Jogador "+ clientCount+" conectado. Endereco: " + cliente.getInetAddress().getHostAddress());
-                
-                //mensagem de boas vindas para cliente
-                chat = new PrintStream(cliente.getOutputStream());
-                chat.println("Bem vindo! Voce e o jogador numero: "+clientCount+"\n");
-                
-                //starta thread.
-                Thread thread = new Thread(tratamentoThread);
+
+                PrintStream ps = new PrintStream(cliente.getOutputStream());
+                TratamentoThreadServidor tratamentoThreadServidor = new TratamentoThreadServidor(cliente, this);
+
+                this.clientes.add(ps);
+
+                System.out.println("Nova conexao com o cliente "+ clientCount+". Endereco:" + cliente.getInetAddress().getHostAddress());
+
+                Thread thread = new Thread(tratamentoThreadServidor);
+
                 thread.start();
             }
+
         }catch(Exception e){
 
             System.out.println("exception: " + e);
 
         }
         finally {
-        	try {
-				cliente.close();
-				servidor.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            try {
+                cliente.close();
+                servidor.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
-	}
-	
-    public static void main (String[] args){
-    	Servidor server = new Servidor();
-    	server.start();
 
+    }
+
+    public static void main (String[] args){
+
+        Servidor server = new Servidor();
+        server.start();
     }
 }
